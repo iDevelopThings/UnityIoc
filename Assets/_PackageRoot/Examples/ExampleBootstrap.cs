@@ -15,16 +15,20 @@ namespace _PackageRoot.Examples
         //     Debug.Log("ExampleBootstrap.Load()");
         // }
 
-        /// <inheritdoc />
-        public override void BindGlobal(ContainerManager container) { }
+        public override void BindGlobal(ContainerManager container) {
+            Debug.Log($"ExampleBootstrap: BindGlobal");
+        }
 
-        /// <inheritdoc />
-        public override void BindScene(ContainerManager container, Scene scene, LoadSceneMode mode) { }
+        public override void BindScene(ContainerManager container, Scene scene, LoadSceneMode mode) {
+            Debug.Log($"ExampleBootstrap: BindScene");
+        }
 
-        /// <inheritdoc />
-        public override void UnBindScene(ContainerManager container, Scene scene) { }
+        public override void UnBindScene(ContainerManager container, Scene scene) {
+            Debug.Log($"ExampleBootstrap: UnBindScene");
+        }
 
-        /// <inheritdoc />
-        public override void OnSceneChange(ContainerManager container, Scene previousScene, Scene newScene) { }
+        public override void OnSceneChange(ContainerManager container, Scene previousScene, Scene newScene) {
+            Debug.Log($"ExampleBootstrap: OnSceneChange");
+        }
     }
 }

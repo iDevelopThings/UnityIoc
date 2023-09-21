@@ -40,9 +40,10 @@ namespace UnityIoc.Runtime
             if (Instance != null) {
                 throw new Exception("ContainerManager already initialized.");
             }
+
             Instance = this;
         }
-        
+
         private TypeInformation EnsureTypeCached(Type type) {
             if (_typeCache.TryGetValue(type, out var typeInfo)) {
                 return typeInfo;
@@ -67,6 +68,19 @@ namespace UnityIoc.Runtime
                 Debug.LogError($"The type `{bootstrapper.Type}` is not a subclass of `UnityIoc.Runtime.Bootstrapper`.");
                 return;
             }
+
+            if (Instance == null) {
+                Instance = new ContainerManager();
+            }
+
+            SceneManager.sceneUnloaded -= Instance.OnSceneUnloaded;
+            SceneManager.sceneUnloaded += Instance.OnSceneUnloaded;
+
+            SceneManager.sceneLoaded -= Instance.OnSceneLoaded;
+            SceneManager.sceneLoaded += Instance.OnSceneLoaded;
+
+            SceneManager.activeSceneChanged -= Instance.OnActiveSceneChanged;
+            SceneManager.activeSceneChanged += Instance.OnActiveSceneChanged;
 
             Bootstrapper = Activator.CreateInstance(bootstrapper.Type) as Bootstrapper;
             Bootstrapper!.BindGlobal(Instance);

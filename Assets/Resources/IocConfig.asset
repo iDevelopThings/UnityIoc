@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c164d1f071cc4eb4a68bef73454149ac, type: 3}
   m_Name: IocConfig
   m_EditorClassIdentifier: 
+  Path: Assets/Resources/IocConfig.asset
   assetReferences: []
+  IocBootstrapperType:
+    _typeAssemblyQualifiedName: _PackageRoot.Examples.ExampleBootstrap, Assembly-CSharp,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

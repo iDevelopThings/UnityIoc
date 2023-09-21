@@ -26,19 +26,6 @@ namespace UnityIoc.Runtime
             ContainerManager.Bootstrapper = null;
         }
 
-
-        protected override void OnSceneUnloaded(Scene scene) {
-            _containerInstance.OnSceneUnloaded(scene);
-        }
-
-        protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-            _containerInstance.OnSceneLoaded(scene, mode);
-        }
-
-        protected override void OnActiveSceneChanged(Scene previousScene, Scene newScene) {
-            _containerInstance.OnActiveSceneChanged(previousScene, newScene);
-        }
-
         public static void RegisterSingleton<TInterface, TConcrete>(Func<object> factory = null) where TConcrete : class, TInterface, new()
             => Instance._containerInstance.RegisterSingleton<TInterface, TConcrete>(factory);
 
