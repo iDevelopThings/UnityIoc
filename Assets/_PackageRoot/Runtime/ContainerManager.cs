@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityIoc.Runtime.Attributes;
 using Object = UnityEngine.Object;
 
@@ -27,11 +28,21 @@ namespace UnityIoc.Runtime
         private Dictionary<Type, Func<object>> _transientFactories = new();
         private Dictionary<Type, PrefabInfo>   _prefabMappings     = new();
 
+        public static Bootstrapper     Bootstrapper { get; set; }
+        public static ContainerManager Instance     { get; set; }
+
         public event OnResolvingDelegate         OnResolving;
         public event OnResolvedDelegate          OnResolved;
         public event OnInjectingPropertyDelegate OnInjectingProperty;
         public event OnInjectedPropertyDelegate  OnInjectedProperty;
 
+        public ContainerManager() {
+            if (Instance != null) {
+                throw new Exception("ContainerManager already initialized.");
+            }
+            Instance = this;
+        }
+        
         private TypeInformation EnsureTypeCached(Type type) {
             if (_typeCache.TryGetValue(type, out var typeInfo)) {
                 return typeInfo;
@@ -42,6 +53,30 @@ namespace UnityIoc.Runtime
 
             return typeInfo;
         }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        public static void InitializeContainer() {
+            var bootstrapper = IocConfig.Instance.IocBootstrapperType;
+            if (bootstrapper == null) {
+                Debug.LogError($"No bootstrapper type define a class extending `UnityIoc.Runtime.Bootstrapper` and assign it to your IocConfig in `{IocConfig.Instance.Path}`.");
+                return;
+            }
+
+            // Ensure that `bootstrapper.Type` is actually a subclass of `Bootstrapper`
+            if (!typeof(Bootstrapper).IsAssignableFrom(bootstrapper.Type)) {
+                Debug.LogError($"The type `{bootstrapper.Type}` is not a subclass of `UnityIoc.Runtime.Bootstrapper`.");
+                return;
+            }
+
+            Bootstrapper = Activator.CreateInstance(bootstrapper.Type) as Bootstrapper;
+            Bootstrapper!.BindGlobal(Instance);
+        }
+
+        public void OnSceneLoaded(Scene scene, LoadSceneMode mode) => Bootstrapper?.BindScene(this, scene, mode);
+
+        public void OnSceneUnloaded(Scene scene) => Bootstrapper?.UnBindScene(this, scene);
+
+        public void OnActiveSceneChanged(Scene previousScene, Scene newScene) => Bootstrapper?.OnSceneChange(this, previousScene, newScene);
 
         public void RegisterSingleton(Type concreteType, Type interfaceType = null, Func<object> factory = null) {
             var concreteInfo = EnsureTypeCached(concreteType);
@@ -179,6 +214,7 @@ namespace UnityIoc.Runtime
 
             return instance;
         }
+
 
     }
 

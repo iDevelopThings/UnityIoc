@@ -85,7 +85,7 @@ namespace UnityIoc.Runtime
 
         protected virtual void OnSceneLoaded(Scene scene, LoadSceneMode mode) { }
 
-        protected virtual void OnActiveSceneChanged(Scene current, Scene next) { }
+        protected virtual void OnActiveSceneChanged(Scene previousScene, Scene newScene) { }
 
         protected virtual void OnSingletonReset() { }
     }
